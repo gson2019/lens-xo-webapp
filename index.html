@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=600, height=600, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Lens XO is a compact tic-tac-toe game for Meta Ray-Ban Display with D-pad controls.">
+  <meta name="mrbd-web-app-capable" content="yes">
+  <title>Lens XO</title>
+  <link rel="icon" type="image/png" sizes="128x128" href="lens-xo-launcher-128.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="lens-xo-launcher-192.png">
+  <link rel="manifest" href="lens-xo.webmanifest?v=lensxo6">
+  <link rel="preload" href="lens-xo-launcher-192.png" as="image">
+  <style>
+    html, body { width: 600px; height: 600px; margin: 0; overflow: hidden; background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .loading-screen { position: fixed; inset: 0; z-index: 100; width: 600px; height: 600px; padding: 8px; background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; opacity: 1; transition: opacity 180ms ease; box-sizing: border-box; }
+    .loading-screen.hidden { opacity: 0; pointer-events: none; }
+    .loading-screen h1 { margin: 0; font-size: 34px; line-height: 1.05; font-weight: 800; }
+    .loading-screen p { margin: 0; color: #b0b3b8; font-size: 16px; font-weight: 750; }
+    .loading-logo { width: 220px; height: 112px; border-radius: 8px; background: #101218; display: flex; align-items: center; justify-content: center; }
+    .lens { width: 76px; height: 76px; border: 5px solid #49d7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; line-height: 1; font-weight: 900; box-sizing: border-box; }
+    .lens-left { color: #fff; }
+    .lens-right { color: #ffd166; }
+    .bridge { width: 18px; height: 6px; background: #49d7ff; }
+  </style>
+  <link rel="preload" href="styles.css?v=lensxo6" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="styles.css?v=lensxo6"></noscript>
+</head>
+<body>
+  <div id="loading-screen" class="loading-screen" role="status" aria-label="Loading Lens XO">
+    <div class="loading-logo" aria-hidden="true">
+      <span class="lens lens-left">X</span>
+      <span class="bridge"></span>
+      <span class="lens lens-right">O</span>
+    </div>
+    <h1>Lens XO</h1>
+    <p>Loading board</p>
+  </div>
+
+  <div id="app" aria-live="polite">
+    <section id="game" class="screen" aria-label="Lens XO game">
+      <header class="header">
+        <div>
+          <p class="eyebrow">Meta Ray-Ban Display</p>
+          <h1>Lens XO</h1>
+        </div>
+        <div class="score-panel" aria-label="Score">
+          <span>X <strong id="x-score">0</strong></span>
+          <span>O <strong id="o-score">0</strong></span>
+          <span>D <strong id="draw-score">0</strong></span>
+        </div>
+      </header>
+
+      <main class="game-content">
+        <div class="status-card">
+          <span class="status-label">Status</span>
+          <strong id="game-status">Your turn</strong>
+        </div>
+
+        <div class="board" role="grid" aria-label="Lens XO board">
+          <button class="cell focusable" data-cell="0" role="gridcell" aria-label="Top left"></button>
+          <button class="cell focusable" data-cell="1" role="gridcell" aria-label="Top center"></button>
+          <button class="cell focusable" data-cell="2" role="gridcell" aria-label="Top right"></button>
+          <button class="cell focusable" data-cell="3" role="gridcell" aria-label="Middle left"></button>
+          <button class="cell focusable" data-cell="4" role="gridcell" aria-label="Middle center"></button>
+          <button class="cell focusable" data-cell="5" role="gridcell" aria-label="Middle right"></button>
+          <button class="cell focusable" data-cell="6" role="gridcell" aria-label="Bottom left"></button>
+          <button class="cell focusable" data-cell="7" role="gridcell" aria-label="Bottom center"></button>
+          <button class="cell focusable" data-cell="8" role="gridcell" aria-label="Bottom right"></button>
+        </div>
+      </main>
+
+      <nav class="nav-bar" aria-label="Game actions">
+        <button class="nav-item focusable" data-action="new-round">New Round</button>
+        <button class="nav-item focusable" data-action="reset-score">Reset Score</button>
+      </nav>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js?v=lensxo6"></script>
+</body>
+</html>
