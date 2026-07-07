@@ -1,7 +1,7 @@
 {
-  "name": "Lens XO",
-  "short_name": "Lens XO",
-  "description": "Lens XO is a compact tic-tac-toe game for Meta Ray-Ban Display with D-pad controls.",
+  "name": "Car Hunter",
+  "short_name": "Car Hunter",
+  "description": "Aim at a car, capture, and on-device object detection scores the catch. For Meta Ray-Ban Display.",
   "icons": [
     {
       "src": "lens-xo-launcher-128.png",
@@ -19,5 +19,5 @@
   "background_color": "#000000",
   "theme_color": "#000000",
   "display": "standalone",
-  "start_url": "/lens-xo/?v=lensxo6"
+  "start_url": "/?v=carhunter1"
 }
