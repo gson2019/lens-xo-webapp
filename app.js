@@ -365,20 +365,14 @@
     window.setTimeout(function() { loadingScreen.remove(); }, 220);
   }
 
-  // Drop any stale service worker / caches from a previous version of this app
-  // (e.g. the old tic-tac-toe build) so the glasses WebView never serves stale
-  // content. We do NOT register a SW by default.
-  function clearOldCaches() {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations()
-        .then(function(regs) { regs.forEach(function(r) { r.unregister(); }); })
-        .catch(function() {});
-    }
-    if ("caches" in window) {
-      caches.keys()
-        .then(function(keys) { keys.forEach(function(k) { caches.delete(k); }); })
-        .catch(function() {});
-    }
+  // Register the service worker so the ~18MB model is cached after the first
+  // download and loads instantly (and offline) on every relaunch. The SW's
+  // activate step also drops caches from the old tic-tac-toe build.
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.register("service-worker.js").catch(function(error) {
+      console.warn("SW registration failed", error);
+    });
   }
 
   function init() {
@@ -386,7 +380,7 @@
     setupEvents();
     render();
     focusCapture();
-    clearOldCaches();
+    registerServiceWorker();
     hideLoadingScreen();
 
     // Start camera, then pre-load + warm up the detector in the background so
