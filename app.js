@@ -10,7 +10,7 @@
     // For production on the glasses (offline + WebView domain lock-down) run
     // scripts/fetch-vendor.sh and flip useLocalVendor to true so everything is
     // served from THIS app's own origin.
-    useLocalVendor: false,
+    useLocalVendor: true,
     vendorCDN: {
       tfjs: "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js",
       cocoSsd: "https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"
@@ -122,6 +122,18 @@
     });
   }
 
+  function withTimeout(promise, ms, label) {
+    return new Promise(function(resolve, reject) {
+      var to = setTimeout(function() {
+        reject(new Error((label || "Operation") + " timed out after " + ms + "ms"));
+      }, ms);
+      promise.then(
+        function(v) { clearTimeout(to); resolve(v); },
+        function(e) { clearTimeout(to); reject(e); }
+      );
+    });
+  }
+
   function warmup(model) {
     var c = document.createElement("canvas");
     c.width = CONFIG.captureWidth;
@@ -193,10 +205,11 @@
 
     state.phase = "capturing";
     disableCapture(true);
-    setViewStatus("Scanning…");
+    setViewStatus(state.model ? "Scanning…" : "Loading detector…");
 
-    ensureModel()
+    withTimeout(ensureModel(), 60000, "Model load")
       .then(function(model) {
+        setViewStatus("Scanning…");
         var video = byId("viewfinder");
         var scale = CONFIG.captureWidth / video.videoWidth;
         var w = CONFIG.captureWidth;
@@ -204,9 +217,10 @@
         workCanvas.width = w;
         workCanvas.height = h;
         workCanvas.getContext("2d").drawImage(video, 0, 0, w, h);
-        return model.detect(workCanvas);
+        return withTimeout(model.detect(workCanvas), 20000, "Detection");
       })
       .then(function(predictions) {
+        console.log("[car-hunter] predictions", predictions);
         var hit = null;
         for (var i = 0; i < predictions.length; i += 1) {
           var p = predictions[i];
@@ -284,7 +298,9 @@
   }
 
   function moveFocus(direction) {
-    var focusables = Array.prototype.slice.call(document.querySelectorAll(".focusable"));
+    // Skip disabled elements so focus never dead-locks on a disabled Capture button.
+    var focusables = Array.prototype.slice.call(document.querySelectorAll(".focusable"))
+      .filter(function(el) { return !el.hasAttribute("disabled"); });
     if (!focusables.length) return;
     var active = document.activeElement;
     var current = focusables.indexOf(active);
